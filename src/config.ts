@@ -1,9 +1,16 @@
+import type { PlatformPath } from 'path'
 import importedPath from 'path'
 import type { ResolverIO } from './types'
 
 // inline fp methods due to perf
 const uniq = (arr) => arr.filter((elem, pos, a) => a.indexOf(elem) === pos)
-const reversePathsToWalk = ({ folder, path }) => {
+const reversePathsToWalk = ({
+  folder,
+  path,
+}: {
+  folder: string
+  path: PlatformPath
+}): string[] => {
   const resolved = path.resolve(folder)
   const parts = resolved.split(path.sep)
   const results = parts.map((_, idx, arr) =>
@@ -13,28 +20,29 @@ const reversePathsToWalk = ({ folder, path }) => {
   return results.reverse()
 }
 
-const configLookup = (file: string, folder: string, path: any = importedPath) =>
+const configLookup = (
+  files: string[],
+  folder: string,
+  path: PlatformPath = importedPath,
+) =>
   uniq(
-    reversePathsToWalk({ folder, path })
-      .map((p) => [
-        path.join(p, file),
-        path.join(p, file).replace(/.js$/, '.cjs'),
-      ])
-      .flat(),
+    reversePathsToWalk({ folder, path }).flatMap((p) =>
+      files.map((f) => path.join(p, f)),
+    ),
   )
 
 class ConfigResolver {
-  configFile: string
+  configFiles: string[]
 
   io: ResolverIO
 
-  constructor(configFile: string, io: ResolverIO) {
-    this.configFile = configFile
+  constructor(configFiles: string[], io: ResolverIO) {
+    this.configFiles = configFiles
     this.io = io
   }
 
   async resolve(from: string) {
-    const configCandidates = configLookup(this.configFile, from)
+    const configCandidates = configLookup(this.configFiles, from)
     const { exists, load, none } = this.io
     for (const candidate of configCandidates) {
       if (await exists(candidate)) {

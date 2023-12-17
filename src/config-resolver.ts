@@ -3,7 +3,7 @@ import fs from 'fs-extra'
 import type { RunnerConfig } from './types'
 import { ConfigResolver } from './config'
 
-const configResolver = new ConfigResolver('.hygen.js', {
+const configResolver = new ConfigResolver(['.hygen.js', '.hygen.cjs'], {
   exists: fs.exists,
   load: async (f) => await import(f),
   none: (_) => ({}),
