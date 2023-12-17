@@ -61,7 +61,8 @@ const resolvePositionals = (templates, args) => __awaiter(void 0, void 0, void 0
     }
     return [generator, action, name];
 });
-const params = ({ templates, createPrompter }, externalArgv) => __awaiter(void 0, void 0, void 0, function* () {
+const params = (config, externalArgv) => __awaiter(void 0, void 0, void 0, function* () {
+    const { templates, createPrompter } = config;
     const argv = (0, yargs_parser_1.default)(externalArgv);
     const [generator, action, name] = yield resolvePositionals(templates, argv._);
     if (!generator || !action) {
@@ -70,7 +71,7 @@ const params = ({ templates, createPrompter }, externalArgv) => __awaiter(void 0
     const [mainAction, subaction] = action.split(':');
     const actionfolder = path_1.default.join(templates, generator, mainAction);
     const { _ } = argv, cleanArgv = __rest(argv, ["_"]);
-    const promptArgs = yield (0, prompt_1.default)(createPrompter, actionfolder, Object.assign(Object.assign({}, (name ? { name } : {})), cleanArgv));
+    const promptArgs = yield (0, prompt_1.default)(createPrompter, actionfolder, Object.assign(Object.assign({}, (name ? { name } : {})), cleanArgv), config);
     const args = Object.assign({
         templates,
         actionfolder,

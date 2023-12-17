@@ -34,7 +34,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const path_1 = __importDefault(require("path"));
 const fs_extra_1 = __importDefault(require("fs-extra"));
 const config_1 = require("./config");
-const configResolver = new config_1.ConfigResolver('.hygen.js', {
+const configResolver = new config_1.ConfigResolver(['.hygen.js', '.hygen.cjs'], {
     exists: fs_extra_1.default.exists,
     load: (f) => __awaiter(void 0, void 0, void 0, function* () { return yield Promise.resolve().then(() => __importStar(require(f))); }),
     none: (_) => ({}),

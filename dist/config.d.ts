@@ -1,13 +1,14 @@
+import type { PlatformPath } from 'path';
 import type { ResolverIO } from './types';
-declare const reversePathsToWalk: ({ folder, path }: {
-    folder: any;
-    path: any;
-}) => any;
-declare const configLookup: (file: string, folder: string, path?: any) => any;
+declare const reversePathsToWalk: ({ folder, path, }: {
+    folder: string;
+    path: PlatformPath;
+}) => string[];
+declare const configLookup: (files: string[], folder: string, path?: PlatformPath) => any;
 declare class ConfigResolver {
-    configFile: string;
+    configFiles: string[];
     io: ResolverIO;
-    constructor(configFile: string, io: ResolverIO);
+    constructor(configFiles: string[], io: ResolverIO);
     resolve(from: string): Promise<Record<string, any>>;
 }
 export { configLookup, ConfigResolver, reversePathsToWalk };

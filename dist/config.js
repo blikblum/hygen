@@ -16,7 +16,7 @@ exports.reversePathsToWalk = exports.ConfigResolver = exports.configLookup = voi
 const path_1 = __importDefault(require("path"));
 // inline fp methods due to perf
 const uniq = (arr) => arr.filter((elem, pos, a) => a.indexOf(elem) === pos);
-const reversePathsToWalk = ({ folder, path }) => {
+const reversePathsToWalk = ({ folder, path, }) => {
     const resolved = path.resolve(folder);
     const parts = resolved.split(path.sep);
     const results = parts.map((_, idx, arr) => arr.slice(0, idx + 1).join(path.sep));
@@ -24,16 +24,16 @@ const reversePathsToWalk = ({ folder, path }) => {
     return results.reverse();
 };
 exports.reversePathsToWalk = reversePathsToWalk;
-const configLookup = (file, folder, path = path_1.default) => uniq(reversePathsToWalk({ folder, path }).map((p) => path.join(p, file)));
+const configLookup = (files, folder, path = path_1.default) => uniq(reversePathsToWalk({ folder, path }).flatMap((p) => files.map((f) => path.join(p, f))));
 exports.configLookup = configLookup;
 class ConfigResolver {
-    constructor(configFile, io) {
-        this.configFile = configFile;
+    constructor(configFiles, io) {
+        this.configFiles = configFiles;
         this.io = io;
     }
     resolve(from) {
         return __awaiter(this, void 0, void 0, function* () {
-            const configCandidates = configLookup(this.configFile, from);
+            const configCandidates = configLookup(this.configFiles, from);
             const { exists, load, none } = this.io;
             for (const candidate of configCandidates) {
                 if (yield exists(candidate)) {

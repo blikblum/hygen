@@ -33,7 +33,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
-const helpers_1 = __importDefault(require("./helpers"));
+const helpers_1 = require("./helpers");
 const hooksfiles = [
     'index.js',
     'index.ts',
@@ -41,7 +41,7 @@ const hooksfiles = [
     'prompt.js',
     'prompt.ts',
 ];
-const prompt = (createPrompter, actionfolder, args) => __awaiter(void 0, void 0, void 0, function* () {
+const prompt = (createPrompter, actionfolder, args, config) => __awaiter(void 0, void 0, void 0, function* () {
     const hooksfile = hooksfiles
         .map((f) => path_1.default.resolve(path_1.default.join(actionfolder, f)))
         .find((f) => fs_1.default.existsSync(f));
@@ -58,8 +58,9 @@ const prompt = (createPrompter, actionfolder, args) => __awaiter(void 0, void 0,
     if (hooksModule.default) {
         hooksModule = hooksModule.default;
     }
+    const h = (0, helpers_1.createHelpers)({}, config);
     if (hooksModule.params) {
-        return hooksModule.params({ args, h: helpers_1.default });
+        return hooksModule.params({ args, h });
     }
     // lazy loads prompter
     // everything below requires it
@@ -69,7 +70,7 @@ const prompt = (createPrompter, actionfolder, args) => __awaiter(void 0, void 0,
             prompter,
             inquirer: prompter,
             args,
-            h: helpers_1.default,
+            h,
         });
     }
     return prompter.prompt(
